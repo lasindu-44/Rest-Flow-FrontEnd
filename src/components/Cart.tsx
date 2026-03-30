@@ -9,7 +9,7 @@ interface CartItem {
   image: string;
   quantity: number;
 }
-
+/*test*/
 function Cart() {
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
