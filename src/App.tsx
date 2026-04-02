@@ -7,6 +7,7 @@ import Login from "./Pages/Login";
 import SignUp from "./components/SignUpCard";
 import RestaurantMenu from "./Pages/RestaurantMenu";
 import Cart from "./components/Cart";
+import TestTailwind from "./Pages/test";
 
 
 
@@ -25,9 +26,7 @@ function App() {
           <Route path="/SignUp" element={<SignUp />} />
           <Route path="/Menu" element={<RestaurantMenu />} />
           <Route path="/Cart" element={<Cart />} />
-
-
-
+          <Route path="/test" element={<TestTailwind />} />
         </Routes>
       </main>
     </div>

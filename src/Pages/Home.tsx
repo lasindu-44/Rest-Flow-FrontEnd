@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { getPopularMovies, searchMovies } from "../Services/api";
 import { getUserRole } from "../Services/ReadToke";
-
 import "../css/Home.css";
 import Navbar from "../components/NavBar";
 
