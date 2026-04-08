@@ -24,6 +24,15 @@ import { supabase } from "../Services/SupaBase";
 import { useEffect } from "react";
 import Swal from "sweetalert2";
 
+
+
+
+  const onAddMenu = (restaurant: any) => {
+
+  console.log("Add menu for:", restaurant);
+  
+};
+
 const emptyForm = {
   name: "",
   cuisine: "",
@@ -94,6 +103,8 @@ function SelectField({
 }
 
 function RestaurantCard({ restaurant, onEdit, onDelete }: any) {
+  const navigationcard = useNavigate();
+
   return (
     <motion.div
       layout
@@ -167,7 +178,7 @@ function RestaurantCard({ restaurant, onEdit, onDelete }: any) {
 
           <div className="tooltip">
             <button
-              onClick={() => onAddMenu(restaurant)}
+              onClick={() => navigationcard(`/MenuManagement/${restaurant.id}`)}
               className="icon-btn success-icon-btn"
             >
               <UtensilsCrossed size={16} />
@@ -190,9 +201,7 @@ function RestaurantCard({ restaurant, onEdit, onDelete }: any) {
   );
 }
 
-const onAddMenu = (restaurant: any) => {
-  console.log("Add menu for:", restaurant);
-};
+
 
 const onAddStaff = (restaurant: any) => {
   console.log("Add staff for:", restaurant);
@@ -300,6 +309,7 @@ function RestaurantTable({ restaurants, onEdit, onDelete }: any) {
 
 export default function RestaurantAdminPanel() {
   const navigate = useNavigate();
+
   const [restaurants, setRestaurants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -309,6 +319,8 @@ export default function RestaurantAdminPanel() {
   const [toast, setToast] = useState("");
   const [Loading, SetLoading] = useState(false);
   const [cuisineOptions, setCuisineOptions] = useState([]);
+
+
 
   const fetchCuisines = async () => {
     try {
@@ -325,7 +337,7 @@ export default function RestaurantAdminPanel() {
       );
 
       if (response.status === 401) {
-        alert("Unauthorized");
+        //alert("Unauthorized");
         // e.g. redirect to login
         navigate("/SignIn");
         return;
@@ -360,7 +372,7 @@ export default function RestaurantAdminPanel() {
       );
 
       if (response.status === 401) {
-        alert("Unauthorized");
+        //alert("Unauthorized");
         // e.g. redirect to login
         navigate("/SignIn");
         return;
