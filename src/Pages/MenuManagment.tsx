@@ -98,7 +98,7 @@ const fetchCategories = async () => {
 
   const filteredCategories = useMemo(() => {
     return categories
-      .filter((category) => {
+      .filter((category:any) => {
         const q = categoryQuery.trim().toLowerCase();
         if (!q) return true;
         return (
@@ -106,7 +106,7 @@ const fetchCategories = async () => {
           category.description.toLowerCase().includes(q)
         );
       })
-      .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+      .sort((a:any, b:any) => (a.displayOrder || 0) - (b.displayOrder || 0));
   }, [categories, categoryQuery]);
 
   const resetCategoryForm = () => {
@@ -539,7 +539,7 @@ const fetchCategories = async () => {
                     </button>
                     <button
                       className="mm-action-btn"
-                      onClick={() => toggleCategoryStatus(category.categoryId)}
+                     /* onClick={() => toggleCategoryStatus(category.categoryId)}*/
                     >
                       <Eye size={16} /> View Items
                     </button>
