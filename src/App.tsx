@@ -8,6 +8,9 @@ import SignUp from "./components/SignUpCard";
 import RestaurantMenu from "./Pages/RestaurantMenu";
 import Cart from "./components/Cart";
 import TestTailwind from "./Pages/test";
+import FoodOrderAdminMasterUI from "./Pages/MenuManagment";
+
+import MenuItemsTable from "./Pages/MenuItem";
 
 
 
@@ -27,6 +30,10 @@ function App() {
           <Route path="/Menu" element={<RestaurantMenu />} />
           <Route path="/Cart" element={<Cart />} />
           <Route path="/test" element={<TestTailwind />} />
+          <Route path="/MenuManagement/:restaurantId" element={<FoodOrderAdminMasterUI />} />
+          <Route path="/MenuItem" element={<MenuItemsTable />} />
+
+
         </Routes>
       </main>
     </div>
