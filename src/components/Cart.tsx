@@ -1,77 +1,151 @@
-import { useMemo, useState } from "react";
-
+import { useMemo, useState, useEffect } from "react";
 import "../css/Cart.css";
+import { BackendURL } from "../Services/BackendURL";
+import { useNavigate } from "react-router-dom";
+
+interface cart {
+  subtotal: number;
+  items: CartItem[];
+}
 
 interface CartItem {
   id: number;
-  name: string;
-  price: number;
-  portion: string;
-  image: string;
+  cartId: number;
+  restaurantId: number;
+  restaurantName: string;
+  foodCategoryId: number;
+  foodCategoryName: string;
+  foodItemId: number;
+  foodItemName: string;
   quantity: number;
+  unitPrice: number;
+  imagePreview: string;
 }
 /*test*/
 function Cart() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Chicken Spring Rolls",
-      price: 850,
-      portion: "4 pcs",
-      image:
-        "https://static.where-e.com/Sri_Lanka/Western_Province/Pizza-Hut-Kotikawatta_6b7a0b10a792a53ae21fe6cd7cd43e4d.jpg",
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: "Garlic Bread",
-      price: 600,
-      portion: "6 slices",
-      image:
-        "https://static.where-e.com/Sri_Lanka/Western_Province/Pizza-Hut-Kotikawatta_6b7a0b10a792a53ae21fe6cd7cd43e4d.jpg",
-      quantity: 2,
-    },
-    {
-      id: 3,
-      name: "Iced Coffee",
-      price: 700,
-      portion: "350ml",
-      image:
-        "https://static.where-e.com/Sri_Lanka/Western_Province/Pizza-Hut-Kotikawatta_6b7a0b10a792a53ae21fe6cd7cd43e4d.jpg",
-      quantity: 1,
-    },
-  ]);
+  const navigate = useNavigate();
+  const [cart, setCart] = useState<cart>({ subtotal: 0, items: [] });
 
-  const increaseQty = (id: number) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+  useEffect(() => {
+    fetchCartforUser();
+  }, []);
+
+  const fetchCartforUser = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        BackendURL + "/api/Cart/GetUserCart",
+
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (response.status === 401) {
+        navigate("/SignIn");
+        return;
+      }
+
+      if (!response.ok) {
+        alert("Failed to fetch Cart");
+      }
+
+      const data = await response.json();
+      console.log("Fetched Cart:", data);
+      setCart(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      console.log("Fetch cart completed");
+    }
   };
 
-  const decreaseQty = (id: number) => {
-    setCartItems((prev) =>
-      prev
-        .map((item) =>
-          item.id === id
-            ? { ...item, quantity: Math.max(0, item.quantity - 1) }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
+  const ChangeQuntityoftheCartItem = async (item: CartItem, increaseQty: boolean) => {
+  try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        BackendURL + "/api/Cart/ChangeQuntityoftheCartItem?CartItemId=" + item.id + "&increaseQty=" + increaseQty,
+
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+         
+        },
+      );
+
+      if (response.status === 401) {
+        navigate("/SignIn");
+        return;
+      }
+
+      if (!response.ok) {
+        alert("Failed to update Cart");
+      }
+
+     if (response.ok) {
+        fetchCartforUser();
+      }
+     
+    } catch (error) {
+      console.error(error);
+    } finally {
+      console.log("Fetch cart completed");
+    }
   };
 
-  const removeItem = (id: number) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  const increaseQty = async (item:CartItem) => {
+    await ChangeQuntityoftheCartItem(item, true);
+  };
+  
+
+  const decreaseQty = async(item: CartItem) => {
+    await ChangeQuntityoftheCartItem(item, false);
   };
 
-  const subtotal = useMemo(() => {
-    return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  }, [cartItems]);
+  const removeItem = async (item: CartItem) => {
+    try {
+      const token = localStorage.getItem("token");
 
-  const deliveryFee = cartItems.length > 0 ? 250 : 0;
-  const total = subtotal + deliveryFee;
+      const response = await fetch(
+        BackendURL + "/api/Cart/RemoveCartItem?CartItemId=" + item.id,
+
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+         
+        },
+      );
+
+      if (response.status === 401) {
+        navigate("/SignIn");
+        return;
+      }
+
+      if (!response.ok) {
+        alert("Failed to update Cart");
+      }
+
+     if (response.ok) {
+        fetchCartforUser();
+      }
+     
+    } catch (error) {
+      console.error(error);
+    } finally {
+      console.log("Fetch cart completed");
+    }
+  };
+
+
 
   return (
     <div className="cart-page">
@@ -83,28 +157,30 @@ function Cart() {
 
         <div className="cart-layout">
           <div className="cart-items-section">
-            {cartItems.length === 0 ? (
+            {cart == null ? (
               <div className="cart-empty">
                 <h2>Your cart is empty</h2>
                 <p>Add some delicious items from the menu.</p>
               </div>
             ) : (
-              cartItems.map((item) => (
+              cart.items.map((item) => (
                 <div className="cart-item-card" key={item.id}>
                   <div className="cart-item-image">
-                    <img src={item.image} alt={item.name} />
+                    <img src={item.imagePreview} alt={item.foodItemName} />
                   </div>
 
                   <div className="cart-item-details">
                     <div className="cart-item-top">
                       <div>
-                        <h3>{item.name}</h3>
-                        <p className="cart-item-portion">{item.portion}</p>
+                        <h3>{item.foodItemName}</h3>
+                        <p className="cart-item-portion">
+                          {item.foodCategoryName}
+                        </p>
                       </div>
 
                       <button
                         className="remove-btn"
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item)}
                       >
                         Remove
                       </button>
@@ -112,13 +188,13 @@ function Cart() {
 
                     <div className="cart-item-bottom">
                       <span className="cart-item-price">
-                        Rs. {item.price.toLocaleString()}
+                        Rs. {item.unitPrice.toFixed(2)}
                       </span>
 
                       <div className="quantity-control">
-                        <button onClick={() => decreaseQty(item.id)}>-</button>
+                        <button onClick={() => decreaseQty(item)}>-</button>
                         <span>{item.quantity}</span>
-                        <button onClick={() => increaseQty(item.id)}>+</button>
+                        <button onClick={() => increaseQty(item)}>+</button>
                       </div>
                     </div>
                   </div>
@@ -132,25 +208,17 @@ function Cart() {
 
             <div className="summary-row">
               <span>Subtotal</span>
-              <span>Rs. {subtotal.toLocaleString()}</span>
-            </div>
-
-            <div className="summary-row">
-              <span>Delivery Fee</span>
-              <span>Rs. {deliveryFee.toLocaleString()}</span>
+              <span>Rs. {cart.subtotal.toLocaleString()}</span>
             </div>
 
             <div className="summary-divider"></div>
 
             <div className="summary-row total-row">
               <span>Total</span>
-              <span>Rs. {total.toLocaleString()}</span>
+              <span>Rs. {cart.subtotal.toString()}</span>
             </div>
 
-            <button
-              className="checkout-btn"
-              disabled={cartItems.length === 0}
-            >
+            <button className="checkout-btn" disabled={cart.items.length === 0}>
               Proceed to Checkout
             </button>
           </div>

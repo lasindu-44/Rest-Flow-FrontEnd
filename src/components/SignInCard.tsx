@@ -4,7 +4,8 @@ import "../css/SignIn.css";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-
+import { BackendURL } from "../Services/BackendURL";
+import { getUserRole } from "../Services/ReadToke";
 export default function SignIn() {
   interface FormData {
     username: string;
@@ -21,7 +22,7 @@ export default function SignIn() {
 
   const SignIn = async () => {
     try {
-      const response = await fetch("https://localhost:7169/api/Auth/login", {
+      const response = await fetch(BackendURL + "/api/Auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -130,7 +131,7 @@ export default function SignIn() {
                 const idToken = credentialResponse.credential;
 
                 const response = await fetch(
-                  "https://localhost:7169/api/Auth/google-login",
+                  BackendURL + "/api/Auth/google-login",
                   {
                     method: "POST",
                     headers: {
@@ -146,9 +147,14 @@ export default function SignIn() {
                   // ✅ 1. Save token
                   localStorage.setItem("token", data.token);
                   localStorage.setItem("expiration", data.expiration);
-
                   console.log("Login success:", data);
-                  navigate("/");
+                  const userRole = await getUserRole();
+                  console.log("User Role:", userRole);
+                  if (userRole === "SystemAdmin") {
+                    navigate("/test");
+                  } else {
+                    navigate("/");
+                  }
                 } else {
                   alert(data.message);
                 }
