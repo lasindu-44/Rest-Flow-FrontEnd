@@ -85,26 +85,14 @@ function Navbar() {
                   className={`submenu-panel ${masterFilesOpen ? "show" : ""}`}
                 >
                   <Link
-                    to="/operations/master-files/movies"
+                    to="/test"
                     className="dropdown-link"
                     onClick={closeMenu}
                   >
                     Add Restuarent
                   </Link>
-                  <Link
-                    to="/operations/master-files/genres"
-                    className="dropdown-link"
-                    onClick={closeMenu}
-                  >
-                    Create Menu
-                  </Link>
-                  <Link
-                    to="/operations/master-files/actors"
-                    className="dropdown-link"
-                    onClick={closeMenu}
-                  >
-                    Add Kitchen Supervisor
-                  </Link>
+                
+                 
                 </div>
               </div>
 

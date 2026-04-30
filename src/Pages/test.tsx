@@ -23,19 +23,15 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../Services/SupaBase";
 import { useEffect } from "react";
 import Swal from "sweetalert2";
+import { BackendURL } from "../Services/BackendURL";
 
-
-
-
-  const onAddMenu = (restaurant: any) => {
-
+const onAddMenu = (restaurant: any) => {
   console.log("Add menu for:", restaurant);
-  
 };
 
 const emptyForm = {
   name: "",
-  cuisine: "",
+  cuisine: 0,
   email: "",
   phone: "",
   address: "",
@@ -188,7 +184,9 @@ function RestaurantCard({ restaurant, onEdit, onDelete }: any) {
 
           <div className="tooltip">
             <button
-              onClick={() => onAddStaff(restaurant)}
+              onClick={() =>
+                navigationcard("/AsignStaff", { state: restaurant })
+              }
               className="icon-btn info-icon-btn"
             >
               <UserPlus size={16} />
@@ -201,13 +199,12 @@ function RestaurantCard({ restaurant, onEdit, onDelete }: any) {
   );
 }
 
-
-
 const onAddStaff = (restaurant: any) => {
   console.log("Add staff for:", restaurant);
 };
 
 function RestaurantTable({ restaurants, onEdit, onDelete }: any) {
+  const navigationcard = useNavigate();
   return (
     <div className="table-card">
       <div className="table-responsive">
@@ -279,7 +276,7 @@ function RestaurantTable({ restaurants, onEdit, onDelete }: any) {
 
                     <div className="tooltip">
                       <button
-                        onClick={() => onAddMenu(restaurant)}
+                         onClick={() => navigationcard(`/MenuManagement/${restaurant.id}`)}
                         className="icon-btn success-icon-btn"
                       >
                         <UtensilsCrossed size={16} />
@@ -289,7 +286,9 @@ function RestaurantTable({ restaurants, onEdit, onDelete }: any) {
 
                     <div className="tooltip">
                       <button
-                        onClick={() => onAddStaff(restaurant)}
+                          onClick={() =>
+                navigationcard("/AsignStaff", { state: restaurant })
+              }
                         className="icon-btn info-icon-btn"
                       >
                         <UserPlus size={16} />
@@ -309,6 +308,7 @@ function RestaurantTable({ restaurants, onEdit, onDelete }: any) {
 
 export default function RestaurantAdminPanel() {
   const navigate = useNavigate();
+  console.log("BackendUrl: ", BackendURL);
 
   const [restaurants, setRestaurants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -320,14 +320,12 @@ export default function RestaurantAdminPanel() {
   const [Loading, SetLoading] = useState(false);
   const [cuisineOptions, setCuisineOptions] = useState([]);
 
-
-
   const fetchCuisines = async () => {
     try {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "https://localhost:7169/api/Restaurant/CuisineTypes",
+        BackendURL + "/api/Restaurant/CuisineTypes",
         {
           method: "GET",
           headers: {
@@ -362,7 +360,7 @@ export default function RestaurantAdminPanel() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "https://localhost:7169/api/Restaurant/fetchRestaurants",
+        BackendURL + "/api/Restaurant/fetchRestaurants",
         {
           method: "GET",
           headers: {
@@ -506,7 +504,6 @@ export default function RestaurantAdminPanel() {
 
     if (
       !formData.name ||
-      !formData.cuisine ||
       !formData.phone ||
       !formData.address ||
       !formData.openTime ||
@@ -523,7 +520,7 @@ export default function RestaurantAdminPanel() {
     const formDataToSend = new FormData();
 
     formDataToSend.append("name", formData.name);
-    formDataToSend.append("cuisine", formData.cuisine);
+    formDataToSend.append("cuisine", formData.cuisine.toString());
     formDataToSend.append("email", formData.email);
     formDataToSend.append("phone", formData.phone);
     formDataToSend.append("address", formData.address);
@@ -542,7 +539,7 @@ export default function RestaurantAdminPanel() {
       if (editingId) {
         try {
           const response = await fetch(
-            "https://localhost:7169/api/Restaurant/UpdateRestaurant?RestaurantId=" +
+            BackendURL+"/api/Restaurant/UpdateRestaurant?RestaurantId=" +
               editingId,
             {
               method: "PUT",
@@ -582,16 +579,13 @@ export default function RestaurantAdminPanel() {
         }
       } else {
         try {
-          const response = await fetch(
-            "https://localhost:7169/api/Restaurant/upload",
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-              body: formDataToSend,
+          const response = await fetch(BackendURL + "/api/Restaurant/upload", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
-          );
+            body: formDataToSend,
+          });
 
           if (!response.ok) {
             alert("Restaurant added Faild.");
@@ -653,8 +647,7 @@ export default function RestaurantAdminPanel() {
 
     try {
       const response = await fetch(
-        "https://localhost:7169/api/Restaurant/DeactivateRestaurant?RestaurantId=" +
-          id,
+        BackendURL + "/api/Restaurant/DeactivateRestaurant?RestaurantId=" + id,
         {
           method: "PUT",
           headers: {

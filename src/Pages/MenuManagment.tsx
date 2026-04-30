@@ -11,10 +11,14 @@ import {
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { BackendURL } from "../Services/BackendURL";
+
 
 import "../css/MenuManagment.css";
 
 export default function FoodOrderAdminMasterUI() {
+
+  
   const { restaurantId }  = useParams();
 
   interface CategoryForm {
@@ -40,7 +44,7 @@ const fetchCategories = async () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "https://localhost:7169/api/FoodCategories/GetAllFoodCategories?RestId=" + restaurantId,
+        BackendURL+"/api/FoodCategories/GetAllFoodCategories?RestId=" + restaurantId,
         {
           method: "GET",
           headers: {
@@ -121,7 +125,7 @@ const fetchCategories = async () => {
      console.log("jason body:", JSON.stringify(categoryForm));
 
       const response = await fetch(
-        "https://localhost:7169/api/FoodCategories/SaveCategory",
+        BackendURL+"/api/FoodCategories/SaveCategory",
         {
           method: "POST",
           headers: {
@@ -166,7 +170,7 @@ const fetchCategories = async () => {
      console.log("jason body:", JSON.stringify(categoryForm));
 
       const response = await fetch(
-        "https://localhost:7169/api/FoodCategories/SaveCategory",
+        BackendURL+"/api/FoodCategories/SaveCategory",
         {
           method: "POST",
           headers: {
@@ -290,7 +294,7 @@ const fetchCategories = async () => {
 
     try {
       const response = await fetch(
-        "https://localhost:7169/api/FoodCategories/DeactivateFoodCategory?id=" +
+        BackendURL+"/api/FoodCategories/DeactivateFoodCategory?id=" +
           id,
         {
           method: "PUT",
@@ -539,7 +543,7 @@ const fetchCategories = async () => {
                     </button>
                     <button
                       className="mm-action-btn"
-                     /* onClick={() => toggleCategoryStatus(category.categoryId)}*/
+                      onClick={() => navigate(`/MenuItem/${category.categoryId}/${category.restaurantId}`) }
                     >
                       <Eye size={16} /> View Items
                     </button>

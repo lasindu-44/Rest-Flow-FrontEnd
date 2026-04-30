@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BackendURL } from "../Services/BackendURL";
 
 import "../css/SignUp.css";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +30,7 @@ export default function SignUp() {
 
   const registerUser = async () => {
     try {
-      const response = await fetch("https://localhost:7169/api/Auth/register", {
+      const response = await fetch(BackendURL+"/api/Auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
